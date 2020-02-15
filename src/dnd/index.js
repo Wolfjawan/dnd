@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Board } from "./Board";
-import { _columns, _cards } from "../data";
+import Data from "../data.json";
 import "./index.css";
 
 class App extends Component {
@@ -15,29 +15,42 @@ class App extends Component {
 
   componentDidMount() {
     setTimeout(() => {
-      this.setState({ columns: _columns }, () => {
+      this.setState({ columns: Data._columns }, () => {
         setTimeout(() => {
-          this.setState({ cards: _cards });
+          this.setState({ cards: Data.volunteers });
         }, 100);
       });
     }, 100);
   }
 
-  onSetColumnTargetOption = (e, targetId) => {
+  onSetColumnTargetOption = (e, columnTargetId) => {
     const target = e.target;
     this.setState({
-      columnTargetId: target.id === "column" ? targetId : null,
+      columnTargetId,
       columnTarget: target.id
     });
     setTimeout(function() {
       target.style.opacity = "0.3";
     }, 1);
   };
+  onColumnMove = index => {
+    const { columnTarget, columns, columnTargetId } = this.state;
+    if (columnTarget === "column") {
+      const targetColumn = columns.filter(
+        column => column._id === columnTargetId
+      );
+      const newColumns = columns.filter(
+        column => column._id !== columnTargetId
+      );
+      newColumns.splice(index, 0, targetColumn[0]);
+      this.setState({ columns: newColumns });
+    }
+  };
 
-  onSetCartTargetOption = (e, targetId) => {
+  onSetCartTargetOption = (e, cardTargetId) => {
     const target = e.target;
     this.setState({
-      cardTargetId: target.id === "card" ? targetId : null,
+      cardTargetId,
       cardTarget: target.id
     });
     setTimeout(function() {
@@ -45,39 +58,17 @@ class App extends Component {
     }, 1);
   };
 
-  onCardMove = (cardId, destColumnId, index) => {
+  onCardMove = (columnStatus, columnId, cardIndex) => {
+    // console.log(columnStatus)
+    const { cardTargetId, cards } = this.state;
     if (this.state.cardTarget === "card") {
-      let newColumns = this.state.columns
-        .map(column => {
-          return {
-            ...column,
-            cardIds: column.cardIds.filter(id => cardId !== id)
-          };
-        })
-        .map(column => {
-          return {
-            ...column,
-            cardIds:
-              destColumnId === column.id
-                ? [
-                    ...column.cardIds.slice(0, index),
-                    cardId,
-                    ...column.cardIds.slice(index)
-                  ]
-                : column.cardIds
-          };
-        });
-      this.setState({ columns: newColumns });
-    }
-  };
-
-  onColumnMove = (columnId, index) => {
-    const { columnTarget, columns } = this.state;
-    if (columnTarget === "column") {
-      const targetColumn = columns.filter(column => column.id === columnId);
-      const newColumns = columns.filter(column => column.id !== columnId);
-      newColumns.splice(index, 0, targetColumn[0]);
-      this.setState({ columns: newColumns });
+      let newCards = cards.map(card => {
+        if (card._id === cardTargetId) {
+          return { ...card, volunteerStatus: columnStatus };
+        }
+        return card;
+      });
+      this.setState({ cards: newCards });
     }
   };
 
@@ -97,14 +88,13 @@ class App extends Component {
   render() {
     return (
       <div>
-        
         {this.state.columns.length > 0 ? (
           <Board
             {...this.state}
             onCardMove={this.onCardMove}
             onSetCartTargetOption={this.onSetCartTargetOption}
-            onSetColumnTargetOption={this.onSetColumnTargetOption}
             onDragEnd={this.onDragEnd}
+            onSetColumnTargetOption={this.onSetColumnTargetOption}
             onColumnMove={this.onColumnMove}
           />
         ) : (

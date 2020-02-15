@@ -1,25 +1,24 @@
 import React from "react";
 
-export function Column({
+export default function Column({
   children,
   title,
-  onColumnMove,
-  id,
-  columnIndex,
-  columnTargetId,
-  onSetColumnTargetOption,
-  onDragEnd,
+  _id,
   draggable,
-  columnTarget
+  onSetColumnTargetOption,
+  columnIndex,
+  columnTarget,
+  onColumnMove,
+  onDragEnd
 }) {
   return (
     <div
       className="column-body"
       draggable={draggable}
       id="column"
-      onDragStart={e => onSetColumnTargetOption(e, id)}
-      onDragOver={() => {
-        columnTarget === "column" && onColumnMove(columnTargetId, columnIndex);
+      onDragStart={e => onSetColumnTargetOption(e, _id)}
+      onDragEnterCapture={() => {
+        columnTarget === "column" && onColumnMove(columnIndex);
       }}
       onDragEnd={e => columnTarget === "column" && onDragEnd(e)}
     >

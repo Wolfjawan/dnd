@@ -1,38 +1,34 @@
-import React, { Component } from "react";
-
-class Card extends Component {
-  render() {
-    const {
-      title,
-      onCardMove,
-      id,
-      columnId,
-      cardIndex,
-      cardTargetId,
-      onSetCartTargetOption,
-      onDragEnd,
-      draggable,
-      cardTarget
-    } = this.props;
-    return (
-      <div
-        className={`card-body ${draggable ? "" : "card-spacer"}`}
-        draggable={draggable}
-        id="card"
-        onDragStart={e => onSetCartTargetOption(e, id)}
-        onDragEnd={e =>
-          cardTarget === "card" &&
-          onDragEnd(e, cardTargetId, columnId, cardIndex)
-        }
-        onDragOver={() => {
-          cardTarget === "card" &&
-            onCardMove(cardTargetId, columnId, cardIndex);
-        }}
-      >
-        <div>{title}</div>
-      </div>
-    );
-  }
+import React from "react";
+export default function Card({
+  draggable,
+  onSetCartTargetOption,
+  _id,
+  onCardMove,
+  columnId,
+  cardIndex,
+  columnStatus,
+  onDragEnd,
+  cardTarget,
+  ...card
+}) {
+  return (
+    <div
+      className={`card-body ${draggable ? "" : "card-spacer"}`}
+      draggable={draggable}
+      id="card"
+      onDragStart={e => onSetCartTargetOption(e, _id)}
+      onDragEnterCapture={() => {
+        cardTarget === "card" && onCardMove(columnStatus, columnId, cardIndex);
+      }}
+      onDragEnd={e => cardTarget === "card" && onDragEnd(e)}
+    >
+      {card && (
+        <div>
+          {card.firstName}
+          {""}
+          {card.lastName}
+        </div>
+      )}
+    </div>
+  );
 }
-
-export default Card;
