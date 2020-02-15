@@ -24,7 +24,7 @@ class Card extends Component {
           cardTarget === "card" &&
           onDragEnd(e, cardTargetId, columnId, cardIndex)
         }
-        onDragOver={() => {
+        onDragEnterCapture={() => {
           cardTarget === "card" &&
             onCardMove(cardTargetId, columnId, cardIndex);
         }}

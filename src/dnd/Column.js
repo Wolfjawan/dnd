@@ -18,7 +18,7 @@ export function Column({
       draggable={draggable}
       id="column"
       onDragStart={e => onSetColumnTargetOption(e, id)}
-      onDragOver={() => {
+      onDragEnterCapture={() => {
         columnTarget === "column" && onColumnMove(columnTargetId, columnIndex);
       }}
       onDragEnd={e => columnTarget === "column" && onDragEnd(e)}
