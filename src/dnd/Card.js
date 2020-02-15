@@ -1,26 +1,30 @@
 import React from "react";
+
 export default function Card({
   draggable,
   onSetCartTargetOption,
-  _id,
   onCardMove,
-  columnId,
   cardIndex,
   columnStatus,
   onDragEnd,
   cardTarget,
-  ...card
+  card,
+  cards
 }) {
   return (
     <div
+      style={{ opacity: card && card.opacity && card.opacity }}
       className={`card-body ${draggable ? "" : "card-spacer"}`}
       draggable={draggable}
-      id="card"
-      onDragStart={e => onSetCartTargetOption(e, _id)}
+      id='card'
+      onDragStart={e => onSetCartTargetOption(e, card._id, card.pos)}
+      // onDragEnd={e => cardTarget === "card" && onDragEnd(e)}
       onDragEnterCapture={() => {
-        cardTarget === "card" && onCardMove(columnStatus, columnId, cardIndex);
+        const pos = card && card.pos;
+        cardTarget === "card" &&
+          onCardMove(columnStatus, cardIndex, pos, cards);
       }}
-      onDragEnd={e => cardTarget === "card" && onDragEnd(e)}
+      
     >
       {card && (
         <div>

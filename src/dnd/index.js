@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { Board } from "./Board";
 import Data from "../data.json";
+import { pancakeSort } from "./utilis";
 import "./index.css";
-
+const html = document.getElementsByTagName("html")[0];
 class App extends Component {
   state = {
     cards: [],
@@ -10,14 +11,27 @@ class App extends Component {
     cardTargetId: null,
     cardTarget: "",
     columnTargetId: null,
-    columnTarget: ""
+    columnTarget: "",
+    cardTargetPos: null,
+    cardPreviousPos: null,
+    cardNextPos: null,
+    cardTargetIndex: null
   };
 
   componentDidMount() {
+    const cards = Data.volunteers.map(volunteer => {
+      if (!volunteer.pos) {
+        return {
+          ...volunteer,
+          pos: volunteer.createdAt && new Date(volunteer.createdAt).getTime()
+        };
+      }
+      return volunteer;
+    });
     setTimeout(() => {
       this.setState({ columns: Data._columns }, () => {
         setTimeout(() => {
-          this.setState({ cards: Data.volunteers });
+          this.setState({ cards });
         }, 100);
       });
     }, 100);
@@ -47,37 +61,81 @@ class App extends Component {
     }
   };
 
-  onSetCartTargetOption = (e, cardTargetId) => {
+  onSetCartTargetOption = (e, cardTargetId, cardTargetPos, cardTargetIndex) => {
     const target = e.target;
+    target.addEventListener("drop", e => {
+      this.onDragEnd(e);
+    });
     this.setState({
       cardTargetId,
-      cardTarget: target.id
+      cardTarget: target.id,
+      cardTargetPos,
+      cardTargetIndex
     });
     setTimeout(function() {
       target.style.opacity = "0.3";
+      html.style.zIndex = 100;
     }, 1);
   };
 
-  onCardMove = (columnStatus, columnId, cardIndex) => {
-    // console.log(columnStatus)
-    const { cardTargetId, cards } = this.state;
-    if (this.state.cardTarget === "card") {
-      let newCards = cards.map(card => {
-        if (card._id === cardTargetId) {
-          return { ...card, volunteerStatus: columnStatus };
+  onCardMove = (columnStatus, cardIndex, pos, targetCards) => {
+    const { cardTargetId, cards, cardTargetPos } = this.state;
+    let newPos;
+    if (targetCards) {
+      const nextCard = targetCards[cardIndex + 1];
+      const previousCard = targetCards[cardIndex - 1];
+      if (nextCard && previousCard) {
+        if (pos > cardTargetPos) {
+          if (nextCard) {
+            const cardNextPos = nextCard.pos;
+            newPos = Math.floor((pos + cardNextPos) / 2);
+          }
         }
-        return card;
+        if (pos < cardTargetPos) {
+          if (previousCard) {
+            const cardPreviousPos = previousCard.pos;
+            newPos = Math.floor((pos + cardPreviousPos) / 2);
+          }
+        }
+      }
+      if (!nextCard && previousCard) {
+        newPos = pos;
+        newPos++;
+      }
+      if (nextCard && !previousCard) {
+        newPos = pos;
+        newPos--;
+      }
+    }
+    if (this.state.cardTarget === "card") {
+      const newCards = cards.map(singleCard => {
+        if (singleCard._id === cardTargetId) {
+          return {
+            ...singleCard,
+            volunteerStatus: columnStatus,
+            pos: newPos ? newPos : cardTargetPos,
+            opacity: "0.3"
+          };
+        }
+        return singleCard;
       });
-      this.setState({ cards: newCards });
+      this.setState({
+        cards: newCards
+      });
     }
   };
 
   onDragEnd = e => {
+    console.log("newCards");
     this.setState({
       cardTargetId: null,
       cardTarget: "",
       columnTargetId: null,
-      columnTarget: ""
+      columnTarget: "",
+      cardTargetPos: null,
+      cardPreviousPos: null,
+      cardNextPos: null,
+      cardTargetIndex: null
     });
     const target = e.target;
     setTimeout(function() {
@@ -86,11 +144,14 @@ class App extends Component {
   };
 
   render() {
+    const { cards } = this.state;
+    const sortedCards = cards.sort(pancakeSort("pos", true));
     return (
       <div>
         {this.state.columns.length > 0 ? (
           <Board
             {...this.state}
+            cards={sortedCards}
             onCardMove={this.onCardMove}
             onSetCartTargetOption={this.onSetCartTargetOption}
             onDragEnd={this.onDragEnd}

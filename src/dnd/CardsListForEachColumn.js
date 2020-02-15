@@ -1,22 +1,22 @@
 import React, { Component } from "react";
 import DraggableCard from "./Card";
-
 class CardsListForEachColumn extends Component {
   render() {
     const { column, cards } = this.props;
-    const cardsForEachColumn = cards.filter(card => {
-      if (
-        column.status === "NEW" &&
-        (card.volunteerStatus === column.status ||
-          !card.volunteerStatus ||
-          card.volunteerStatus === undefined)
-      ) {
-        return card;
-      }
-      if (card.volunteerStatus === column.status) {
-        return card;
-      } else return "";
-    });
+    const cardsForEachColumn = cards
+      .filter(card => {
+        if (
+          column.status === "NEW" &&
+          (card.volunteerStatus === column.status ||
+            !card.volunteerStatus ||
+            card.volunteerStatus === undefined)
+        ) {
+          return card;
+        }
+        if (card.volunteerStatus === column.status) {
+          return card;
+        } else return "";
+      })
     if (cardsForEachColumn.length === 0) {
       return (
         <DraggableCard
@@ -32,13 +32,14 @@ class CardsListForEachColumn extends Component {
       if (card) {
         return (
           <DraggableCard
+            {...this.props}
             key={`${card.userId}${cardIndex}`}
-            {...card}
+            card={card}
+            cards={cardsForEachColumn}
             columnId={column._id}
             cardIndex={cardIndex}
             draggable={true}
             columnStatus={column.status}
-            {...this.props}
           />
         );
       } else return null;
