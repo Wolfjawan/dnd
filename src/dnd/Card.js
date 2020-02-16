@@ -1,11 +1,6 @@
 import React, { Component } from "react";
 
 class Card extends Component {
-  componentWillReceiveProps() {
-    const { card, cardTargetId } = this.props;
-    const target = document.getElementsByClassName(cardTargetId)[0];
-    card.userId === cardTargetId && console.log(target);
-  }
   render() {
     const {
       draggable,
@@ -22,17 +17,20 @@ class Card extends Component {
     } = this.props;
     return (
       <div
-        style={{ opacity: card && card.userId === cardTargetId && "0.3" }}
-        className={`card-body ${card.userId} ${draggable ? "" : "card-spacer"}`}
+        style={{ opacity: card && card._id === cardTargetId && "0.3" }}
+        className={`card-body ${draggable ? "" : "card-spacer"}`}
         draggable={draggable}
         id="card"
-        onDragStart={e => onSetCartTargetOption(e, card.userId, card.pos)}
+        onDragStart={e => onSetCartTargetOption(e, card._id, card.pos)}
         onDragEnterCapture={() => {
           const pos = card && card.pos;
           cardTarget === "card" &&
             onCardMove(columnStatus, cardIndex, pos, cards, columnId);
         }}
-        onDragEnd={e => cardTarget === "card" && onDragEnd(e, "card")}
+        onDragEnd={e => {
+          const pos = card && card.pos;
+          cardTarget === "card" && onDragEnd(pos);
+        }}
       >
         {card && (
           <div>

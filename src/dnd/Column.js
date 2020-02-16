@@ -9,10 +9,12 @@ export default function Column({
   columnIndex,
   columnTarget,
   onColumnMove,
-  onDragEnd
+  onDragEnd,
+  columnTargetId
 }) {
   return (
     <div
+      style={{ opacity: columnTargetId === _id && "0.3" }}
       className="column-body"
       draggable={draggable}
       id="column"
@@ -20,7 +22,7 @@ export default function Column({
       onDragEnterCapture={() => {
         columnTarget === "column" && onColumnMove(columnIndex);
       }}
-      onDragEnd={e => onDragEnd(e)}
+      onDragEnd={e => columnTarget === "column" && onDragEnd(e)}
     >
       <div className="column-title">{title}</div>
       {children}

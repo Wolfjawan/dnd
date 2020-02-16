@@ -1,5 +1,11 @@
 import React, { Component, Fragment } from "react";
 import DraggableCard from "./Card";
+const findCards = (column, cards) => {
+  const newCards = column._ids.map(cardId =>
+    cards.find(card => card._id === cardId)
+  );
+  return newCards;
+};
 class CardsListForEachColumn extends Component {
   render() {
     const { column, cards } = this.props;
@@ -16,21 +22,17 @@ class CardsListForEachColumn extends Component {
     }
     return (
       <Fragment>
-        {console.log(column)}
-        {column._ids
-          .map(cardId => cards.find(card => card.userId === cardId))
-          .map((card, cardIndex) => (
-            <div key={card.key}>
-              <DraggableCard
-                {...this.props}
-                card={card}
-                columnId={column._id}
-                cardIndex={cardIndex}
-                draggable={true}
-                columnStatus={column.status}
-              />
-            </div>
-          ))}
+        {findCards(column, cards).map((card, cardIndex) => (
+          <DraggableCard
+            key={card._id}
+            {...this.props}
+            card={card}
+            columnId={column._id}
+            cardIndex={cardIndex}
+            draggable={true}
+            columnStatus={column.status}
+          />
+        ))}
       </Fragment>
     );
   }

@@ -11,6 +11,7 @@ export function Board({
   onDragEnd,
   onCardMove,
   onSetCartTargetOption,
+  columnTargetId,
   ...props
 }) {
   return (
@@ -27,6 +28,7 @@ export function Board({
               onColumnMove={onColumnMove}
               columnTarget={columnTarget}
               onDragEnd={onDragEnd}
+              columnTargetId={columnTargetId}
             >
               {cards.length > 0 ? (
                 <CardsListForEachColumn
@@ -48,75 +50,3 @@ export function Board({
     </div>
   );
 }
-
-
-
-// import React from "react";
-// import Column from "./Column";
-// import DraggableCard from "./Card";
-
-// export function Board({
-//   cards,
-//   columns,
-//   onSetColumnTargetOption,
-//   onColumnMove,
-//   columnTarget,
-//   onDragEnd,
-//   onCardMove,
-//   onSetCartTargetOption,
-//   ...props
-// }) {
-//   return (
-//     <div className="board-body">
-//       {columns.map((column, columnIndex) => {
-//         if (column) {
-//           return (
-//             <Column
-//               key={column._id}
-//               columnIndex={columnIndex}
-//               {...column}
-//               draggable={true}
-//               onSetColumnTargetOption={onSetColumnTargetOption}
-//               onColumnMove={onColumnMove}
-//               columnTarget={columnTarget}
-//               onDragEnd={onDragEnd}
-//             >
-//               {cards.length > 0 ? (
-//                 <>
-//                   {column._ids
-//                     .map(cardId => cards.find(card => card.userId === cardId))
-//                     .map((card, cardIndex) => (
-//                       <DraggableCard
-//                         {...props}
-//                         key={`${card.userId}${cardIndex}`}
-//                         card={card}
-//                         columnId={column._id}
-//                         cardIndex={cardIndex}
-//                         draggable={true}
-//                         columnStatus={column.status}
-//                         onDragEnd={onDragEnd}
-//                         onCardMove={onCardMove}
-//                         onSetCartTargetOption={onSetCartTargetOption}
-//                       />
-//                     ))}
-//                   {column._ids.length === 0 && (
-//                     <DraggableCard
-//                       {...props}
-//                       columnId={column._id}
-//                       columnStatus={column.status}
-//                       cardIndex={0}
-//                       draggable={false}
-//                     />
-//                   )}
-//                 </>
-//               ) : (
-//                 "loading..."
-//               )}
-//             </Column>
-//           );
-//         }
-//         return "";
-//       })}
-//     </div>
-//   );
-// }

@@ -40,16 +40,11 @@ class App extends Component {
     const columns = Data._columns.map(column => {
       let _ids = [];
       cards.forEach(card => {
-        if (
-          column.status === "NEW" &&
-          (card.volunteerStatus === "NEW" ||
-            !card.volunteerStatus ||
-            card.volunteerStatus === undefined)
-        ) {
-          return _ids.push(card.userId);
-        }
         if (card.volunteerStatus === column.status) {
-          return _ids.push(card.userId);
+          return _ids.push(card._id);
+        }
+        if (column.status === "No Status" && !card.volunteerStatus) {
+          return _ids.push(card._id);
         }
       });
       return {
@@ -72,9 +67,6 @@ class App extends Component {
       columnTargetId: target.id === "column" ? columnTargetId : null,
       columnTarget: target.id
     });
-    setTimeout(function() {
-      target.style.opacity = "0.3";
-    }, 1);
   };
   onColumnMove = index => {
     const { columnTarget, columns, columnTargetId } = this.state;
@@ -98,51 +90,48 @@ class App extends Component {
       cardTargetPos,
       cardTargetIndex
     });
-    setTimeout(function() {
-      target.style.opacity = "0.3";
-    }, 1);
   };
 
   onCardMove = (columnStatus, cardIndex, pos, targetCards, columnId) => {
     const { cardTargetId, cards, cardTargetPos } = this.state;
-    // let newPos;
-    // if (targetCards) {
-    //   const nextCard = targetCards[cardIndex + 1];
-    //   const previousCard = targetCards[cardIndex - 1];
-    //   if (nextCard && previousCard) {
-    //     if (pos > cardTargetPos) {
-    //       if (nextCard) {
-    //         const cardNextPos = nextCard.pos;
-    //         newPos = Math.floor((pos + cardNextPos) / 2);
-    //       }
-    //     }
-    //     if (pos < cardTargetPos) {
-    //       if (previousCard) {
-    //         const cardPreviousPos = previousCard.pos;
-    //         newPos = Math.floor((pos + cardPreviousPos) / 2);
-    //       }
-    //     }
-    //   }
-    //   if (!nextCard && previousCard) {
-    //     newPos = pos;
-    //     newPos++;
-    //   }
-    //   if (nextCard && !previousCard) {
-    //     newPos = pos;
-    //     newPos--;
-    //   }
-    // }
+    let newPos;
+    if (targetCards) {
+      const nextCard = targetCards[cardIndex + 1];
+      const previousCard = targetCards[cardIndex - 1];
+      if (nextCard && previousCard) {
+        if (pos > cardTargetPos) {
+          if (nextCard) {
+            const cardNextPos = nextCard.pos;
+            newPos = Math.floor((pos + cardNextPos) / 2);
+          }
+        }
+        if (pos < cardTargetPos) {
+          if (previousCard) {
+            const cardPreviousPos = previousCard.pos;
+            newPos = Math.floor((pos + cardPreviousPos) / 2);
+          }
+        }
+      }
+      if (!nextCard && previousCard) {
+        newPos = pos;
+        newPos++;
+      }
+      if (nextCard && !previousCard) {
+        newPos = pos;
+        newPos--;
+      }
+    }
     if (this.state.cardTarget === "card") {
-      // const newCards = cards.map(singleCard => {
-      //   if (singleCard.userId === cardTargetId) {
-      //     return {
-      //       ...singleCard,
-      //       volunteerStatus: columnStatus,
-      //       pos: newPos ? newPos : cardTargetPos
-      //     };
-      //   }
-      //   return singleCard;
-      // });
+      const newCards = cards.map(singleCard => {
+        if (singleCard._id === cardTargetId) {
+          return {
+            ...singleCard,
+            volunteerStatus: columnStatus,
+            pos: newPos ? newPos : cardTargetPos
+          };
+        }
+        return singleCard;
+      });
       let newColumns = this.state.columns
         .map(column => {
           return {
@@ -163,11 +152,12 @@ class App extends Component {
                 : column._ids
           };
         });
-      this.setState({ columns: newColumns });
+      this.setState({ columns: newColumns, cards: newCards });
     }
   };
 
-  onDragEnd = e => {
+  onDragEnd = pos => {
+    console.log(pos);
     this.setState({
       cardTargetId: null,
       cardTarget: "",
@@ -178,15 +168,11 @@ class App extends Component {
       cardNextPos: null,
       cardTargetIndex: null
     });
-    const target = e.target;
-    setTimeout(function() {
-      target.style.opacity = "1";
-    }, 1);
   };
 
   render() {
     return (
-      <div>
+      <div style={{ overflowX: "auto" }}>
         {this.state.columns.length > 0 ? (
           <Board
             {...this.state}
