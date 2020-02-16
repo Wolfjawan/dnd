@@ -3,7 +3,6 @@ import { Board } from "./Board";
 import Data from "../data.json";
 import { pancakeSort } from "./utilis";
 import "./index.css";
-const html = document.getElementsByTagName("html")[0];
 class App extends Component {
   state = {
     cards: [],
@@ -19,15 +18,18 @@ class App extends Component {
   };
 
   componentDidMount() {
-    const cards = Data.volunteers.map(volunteer => {
-      if (!volunteer.pos) {
-        return {
-          ...volunteer,
-          pos: volunteer.createdAt && new Date(volunteer.createdAt).getTime()
-        };
-      }
-      return volunteer;
-    });
+    const cards = Data.volunteers
+      .map((volunteer, index) => {
+        if (!volunteer.pos) {
+          return {
+            ...volunteer,
+            pos: volunteer.createdAt && new Date(volunteer.createdAt).getTime(),
+            key: index
+          };
+        }
+        return volunteer;
+      })
+      .sort(pancakeSort("pos", true));
     setTimeout(() => {
       this.setState({ columns: Data._columns }, () => {
         setTimeout(() => {
@@ -63,19 +65,12 @@ class App extends Component {
 
   onSetCartTargetOption = (e, cardTargetId, cardTargetPos, cardTargetIndex) => {
     const target = e.target;
-    target.addEventListener("drop", e => {
-      this.onDragEnd(e);
-    });
     this.setState({
       cardTargetId,
       cardTarget: target.id,
       cardTargetPos,
       cardTargetIndex
     });
-    setTimeout(function() {
-      target.style.opacity = "0.3";
-      html.style.zIndex = 100;
-    }, 1);
   };
 
   onCardMove = (columnStatus, cardIndex, pos, targetCards) => {
@@ -113,8 +108,7 @@ class App extends Component {
           return {
             ...singleCard,
             volunteerStatus: columnStatus,
-            pos: newPos ? newPos : cardTargetPos,
-            opacity: "0.3"
+            pos: newPos ? newPos : cardTargetPos
           };
         }
         return singleCard;
@@ -126,7 +120,7 @@ class App extends Component {
   };
 
   onDragEnd = e => {
-    console.log("newCards");
+    console.log("hhhh")
     this.setState({
       cardTargetId: null,
       cardTarget: "",

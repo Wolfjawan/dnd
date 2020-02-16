@@ -8,23 +8,24 @@ export default function Card({
   columnStatus,
   onDragEnd,
   cardTarget,
+  cardTargetId,
   card,
-  cards
+  cards,
+  columnId
 }) {
   return (
     <div
-      style={{ opacity: card && card.opacity && card.opacity }}
+      style={{ opacity: card && card._id === cardTargetId && "0.3" }}
       className={`card-body ${draggable ? "" : "card-spacer"}`}
       draggable={draggable}
-      id='card'
+      id="card"
       onDragStart={e => onSetCartTargetOption(e, card._id, card.pos)}
-      // onDragEnd={e => cardTarget === "card" && onDragEnd(e)}
+      onDragEnd={e => cardTarget === "card" && onDragEnd(e)}
       onDragEnterCapture={() => {
         const pos = card && card.pos;
         cardTarget === "card" &&
-          onCardMove(columnStatus, cardIndex, pos, cards);
+          onCardMove(columnStatus, cardIndex, pos, cards, columnId);
       }}
-      
     >
       {card && (
         <div>
