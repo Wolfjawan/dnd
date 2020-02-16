@@ -3,7 +3,7 @@ import { Board } from "./Board";
 import Data from "../data.json";
 import { pancakeSort } from "./utilis";
 import "./index.css";
-const html = document.getElementsByTagName("html")[0];
+// var html = document.getElementsByTagName("html")[0];
 class App extends Component {
   state = {
     cards: [],
@@ -19,17 +19,46 @@ class App extends Component {
   };
 
   componentDidMount() {
-    const cards = Data.volunteers.map(volunteer => {
-      if (!volunteer.pos) {
-        return {
-          ...volunteer,
-          pos: volunteer.createdAt && new Date(volunteer.createdAt).getTime()
-        };
-      }
-      return volunteer;
+    // html.addEventListener("dragend", e => {
+    //   console.log("drop");
+    //   this.onDragEnd(e);
+    // });
+    // html.draggable = true;
+    // console.log(html);
+    const cards = Data.volunteers
+      .map((volunteer, index) => {
+        if (!volunteer.pos) {
+          return {
+            ...volunteer,
+            pos: volunteer.createdAt && new Date(volunteer.createdAt).getTime(),
+            key: index
+          };
+        }
+        return volunteer;
+      })
+      .sort(pancakeSort("pos", true));
+    const columns = Data._columns.map(column => {
+      let _ids = [];
+      cards.forEach(card => {
+        if (
+          column.status === "NEW" &&
+          (card.volunteerStatus === "NEW" ||
+            !card.volunteerStatus ||
+            card.volunteerStatus === undefined)
+        ) {
+          return _ids.push(card.userId);
+        }
+        if (card.volunteerStatus === column.status) {
+          return _ids.push(card.userId);
+        }
+      });
+      return {
+        ...column,
+        _ids
+      };
     });
     setTimeout(() => {
-      this.setState({ columns: Data._columns }, () => {
+      this.setState({ columns }, () => {
         setTimeout(() => {
           this.setState({ cards });
         }, 100);
@@ -40,7 +69,7 @@ class App extends Component {
   onSetColumnTargetOption = (e, columnTargetId) => {
     const target = e.target;
     this.setState({
-      columnTargetId,
+      columnTargetId: target.id === "column" ? columnTargetId : null,
       columnTarget: target.id
     });
     setTimeout(function() {
@@ -63,70 +92,82 @@ class App extends Component {
 
   onSetCartTargetOption = (e, cardTargetId, cardTargetPos, cardTargetIndex) => {
     const target = e.target;
-    target.addEventListener("drop", e => {
-      this.onDragEnd(e);
-    });
     this.setState({
-      cardTargetId,
+      cardTargetId: target.id === "card" ? cardTargetId : null,
       cardTarget: target.id,
       cardTargetPos,
       cardTargetIndex
     });
     setTimeout(function() {
       target.style.opacity = "0.3";
-      html.style.zIndex = 100;
     }, 1);
   };
 
-  onCardMove = (columnStatus, cardIndex, pos, targetCards) => {
+  onCardMove = (columnStatus, cardIndex, pos, targetCards, columnId) => {
     const { cardTargetId, cards, cardTargetPos } = this.state;
-    let newPos;
-    if (targetCards) {
-      const nextCard = targetCards[cardIndex + 1];
-      const previousCard = targetCards[cardIndex - 1];
-      if (nextCard && previousCard) {
-        if (pos > cardTargetPos) {
-          if (nextCard) {
-            const cardNextPos = nextCard.pos;
-            newPos = Math.floor((pos + cardNextPos) / 2);
-          }
-        }
-        if (pos < cardTargetPos) {
-          if (previousCard) {
-            const cardPreviousPos = previousCard.pos;
-            newPos = Math.floor((pos + cardPreviousPos) / 2);
-          }
-        }
-      }
-      if (!nextCard && previousCard) {
-        newPos = pos;
-        newPos++;
-      }
-      if (nextCard && !previousCard) {
-        newPos = pos;
-        newPos--;
-      }
-    }
+    // let newPos;
+    // if (targetCards) {
+    //   const nextCard = targetCards[cardIndex + 1];
+    //   const previousCard = targetCards[cardIndex - 1];
+    //   if (nextCard && previousCard) {
+    //     if (pos > cardTargetPos) {
+    //       if (nextCard) {
+    //         const cardNextPos = nextCard.pos;
+    //         newPos = Math.floor((pos + cardNextPos) / 2);
+    //       }
+    //     }
+    //     if (pos < cardTargetPos) {
+    //       if (previousCard) {
+    //         const cardPreviousPos = previousCard.pos;
+    //         newPos = Math.floor((pos + cardPreviousPos) / 2);
+    //       }
+    //     }
+    //   }
+    //   if (!nextCard && previousCard) {
+    //     newPos = pos;
+    //     newPos++;
+    //   }
+    //   if (nextCard && !previousCard) {
+    //     newPos = pos;
+    //     newPos--;
+    //   }
+    // }
     if (this.state.cardTarget === "card") {
-      const newCards = cards.map(singleCard => {
-        if (singleCard._id === cardTargetId) {
+      // const newCards = cards.map(singleCard => {
+      //   if (singleCard.userId === cardTargetId) {
+      //     return {
+      //       ...singleCard,
+      //       volunteerStatus: columnStatus,
+      //       pos: newPos ? newPos : cardTargetPos
+      //     };
+      //   }
+      //   return singleCard;
+      // });
+      let newColumns = this.state.columns
+        .map(column => {
           return {
-            ...singleCard,
-            volunteerStatus: columnStatus,
-            pos: newPos ? newPos : cardTargetPos,
-            opacity: "0.3"
+            ...column,
+            _ids: column._ids.filter(_id => cardTargetId !== _id)
           };
-        }
-        return singleCard;
-      });
-      this.setState({
-        cards: newCards
-      });
+        })
+        .map(column => {
+          return {
+            ...column,
+            _ids:
+              columnId === column._id
+                ? [
+                    ...column._ids.slice(0, cardIndex),
+                    cardTargetId,
+                    ...column._ids.slice(cardIndex)
+                  ]
+                : column._ids
+          };
+        });
+      this.setState({ columns: newColumns });
     }
   };
 
   onDragEnd = e => {
-    console.log("newCards");
     this.setState({
       cardTargetId: null,
       cardTarget: "",
@@ -144,14 +185,11 @@ class App extends Component {
   };
 
   render() {
-    const { cards } = this.state;
-    const sortedCards = cards.sort(pancakeSort("pos", true));
     return (
       <div>
         {this.state.columns.length > 0 ? (
           <Board
             {...this.state}
-            cards={sortedCards}
             onCardMove={this.onCardMove}
             onSetCartTargetOption={this.onSetCartTargetOption}
             onDragEnd={this.onDragEnd}

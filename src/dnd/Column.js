@@ -20,7 +20,7 @@ export default function Column({
       onDragEnterCapture={() => {
         columnTarget === "column" && onColumnMove(columnIndex);
       }}
-      onDragEnd={e => columnTarget === "column" && onDragEnd(e)}
+      onDragEnd={e => onDragEnd(e)}
     >
       <div className="column-title">{title}</div>
       {children}
