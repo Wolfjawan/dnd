@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import { Board } from "./Board";
 import Data from "../data.json";
-import { pancakeSort } from "./utilis";
+import { pancakeSort } from "./useCase";
 import "./index.css";
-// var html = document.getElementsByTagName("html")[0];
 class App extends Component {
   state = {
     cards: [],
@@ -19,12 +18,6 @@ class App extends Component {
   };
 
   componentDidMount() {
-    // html.addEventListener("dragend", e => {
-    //   console.log("drop");
-    //   this.onDragEnd(e);
-    // });
-    // html.draggable = true;
-    // console.log(html);
     const cards = Data.volunteers
       .map((volunteer, index) => {
         if (!volunteer.pos) {
@@ -157,7 +150,6 @@ class App extends Component {
   };
 
   onDragEnd = pos => {
-    console.log(pos);
     this.setState({
       cardTargetId: null,
       cardTarget: "",

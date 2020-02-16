@@ -11,3 +11,4 @@ export const toLowerCaseIfAlpha = value => {
       return ascending ? 0 : -1
     }
   }
+  

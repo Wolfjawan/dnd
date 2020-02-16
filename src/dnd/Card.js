@@ -21,7 +21,9 @@ class Card extends Component {
         className={`card-body ${draggable ? "" : "card-spacer"}`}
         draggable={draggable}
         id="card"
-        onDragStart={e => onSetCartTargetOption(e, card._id, card.pos)}
+        onDragStart={e => 
+        onSetCartTargetOption(e, card._id, card.pos)
+        }
         onDragEnterCapture={() => {
           const pos = card && card.pos;
           cardTarget === "card" &&
