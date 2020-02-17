@@ -2,11 +2,11 @@ import React from "react";
 import DND from "./dnd";
 const App = () => {
   return (
-    <div
-      style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-    >
+    <div>
       <h1>DnD</h1>
-      <DND />
+      <div className="dnd-container">
+        <DND />
+      </div>
     </div>
   );
 };

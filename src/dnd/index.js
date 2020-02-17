@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Board } from "./Board";
 import Data from "../data.json";
 import { pancakeSort } from "./utilis";
-import "./index.css";
 class App extends Component {
   state = {
     cards: [],
@@ -120,7 +119,7 @@ class App extends Component {
   };
 
   onDragEnd = e => {
-    console.log("hhhh")
+    console.log("hhhh");
     this.setState({
       cardTargetId: null,
       cardTarget: "",
@@ -141,7 +140,7 @@ class App extends Component {
     const { cards } = this.state;
     const sortedCards = cards.sort(pancakeSort("pos", true));
     return (
-      <div>
+      <div className="list-wrapper">
         {this.state.columns.length > 0 ? (
           <Board
             {...this.state}
