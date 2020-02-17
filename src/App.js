@@ -1,12 +1,12 @@
 import React from "react";
-import DND from "./dnd";
+import DND from "./dnd2";
 const App = () => {
   return (
-    <div
-      style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-    >
-      <h1>DnD</h1>
-      <DND />
+    <div>
+      <h1>DnD2</h1>
+      <div className="dnd-container">
+        <DND />
+      </div>
     </div>
   );
 };
