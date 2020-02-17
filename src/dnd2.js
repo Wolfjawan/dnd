@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import Data from "./data.json";
 import { pancakeSort } from "./dnd/useCase";
 import "./index.css";
@@ -153,7 +153,6 @@ class DnD extends Component {
       }
     }
     if (this.state.cardTarget === "card") {
-      console.log(newPos);
       const newCards = cards.map(singleCard => {
         if (singleCard._id === cardTargetObject) {
           return {
@@ -187,13 +186,13 @@ class DnD extends Component {
           };
         });
       this.setState({
-        columns: newColumns
+        columns: newColumns,
+        cards: newCards
       });
     }
   };
 
   onDragEnd = pos => {
-    console.log(pos);
     this.setState({
       cardTargetObject: null,
       cardTarget: "",

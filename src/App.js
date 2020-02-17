@@ -1,5 +1,5 @@
 import React from "react";
-import DND from "./dnd2";
+import DND from "./dnd";
 const App = () => {
   return (
     <div>

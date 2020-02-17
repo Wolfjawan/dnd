@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 class Card extends Component {
+  state = { draggableCard: false };
   render() {
     const {
       draggable,
@@ -15,25 +16,34 @@ class Card extends Component {
       columnId,
       cardTargetId
     } = this.props;
+    const { draggableCard } = this.state;
     return (
       <div
         style={{ opacity: card && card._id === cardTargetId && "0.3" }}
         className={`card-body ${draggable ? "" : "card-spacer"}`}
-        draggable={draggable}
         id="card"
-        onDragStart={e => 
-        onSetCartTargetOption(e, card._id, card.pos)
-        }
-        onDragEnterCapture={() => {
-          const pos = card && card.pos;
-          cardTarget === "card" &&
-            onCardMove(columnStatus, cardIndex, pos, cards, columnId);
-        }}
-        onDragEnd={e => {
-          const pos = card && card.pos;
-          cardTarget === "card" && onDragEnd(pos);
-        }}
+        draggable={draggableCard && draggable}
+        onDragStart={e => onSetCartTargetOption(e, card._id, card.pos)}
       >
+        <span
+          className="card-destination"
+          onDragEnd={e => {
+            const pos = card && card.pos;
+            cardTarget === "card" && onDragEnd(pos);
+          }}
+          onMouseDown={() => this.setState({ draggableCard: true })}
+          onMouseUp={() => {
+            this.setState({ draggableCard: false });
+          }}
+        >
+          <span
+            onDragEnterCapture={() => {
+              const pos = card && card.pos;
+              cardTarget === "card" &&
+                onCardMove(columnStatus, cardIndex, pos, cards, columnId);
+            }}
+          ></span>
+        </span>
         {card && (
           <div>
             {card.firstName}

@@ -22,19 +22,17 @@ class CardsListForEachColumn extends Component {
     }
     return (
       <Fragment>
-        {findCards(column, cards).map((card, cardIndex) => {
-          return (
-            <DraggableCard
-              key={card._id}
-              {...this.props}
-              card={card}
-              columnId={column._id}
-              cardIndex={cardIndex}
-              draggable={true}
-              columnStatus={column.status}
-            />
-          );
-        })}
+        {findCards(column, cards).map((card, cardIndex) => (
+          <DraggableCard
+            // key={card._id}
+            {...this.props}
+            card={card}
+            columnId={column._id}
+            cardIndex={cardIndex}
+            draggable={true}
+            columnStatus={column.status}
+          />
+        ))}
       </Fragment>
     );
   }

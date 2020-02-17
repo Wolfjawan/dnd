@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Board } from "./Board";
 import Data from "../data.json";
 import { pancakeSort } from "./useCase";
-import "./index.css";
 class App extends Component {
   state = {
     cards: [],
@@ -18,6 +17,10 @@ class App extends Component {
   };
 
   componentDidMount() {
+    // const listWrapper = document.getElementsByClassName("list-wrapper")[0];
+    // listWrapper.addEventListener("dragend", () => {
+    //   console.log("listWrapper");
+    // });
     const cards = Data.volunteers
       .map((volunteer, index) => {
         if (!volunteer.pos) {
@@ -164,7 +167,7 @@ class App extends Component {
 
   render() {
     return (
-      <div style={{ overflowX: "auto" }}>
+      <div className="list-wrapper">
         {this.state.columns.length > 0 ? (
           <Board
             {...this.state}

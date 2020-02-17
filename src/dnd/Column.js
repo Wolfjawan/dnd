@@ -1,35 +1,47 @@
-import React from "react";
+import React, { Component } from "react";
 
-export default function Column({
-  children,
-  title,
-  _id,
-  draggable,
-  onSetColumnTargetOption,
-  columnIndex,
-  columnTarget,
-  onColumnMove,
-  onDragEnd,
-  columnTargetId
-}) {
-  return (
-    <div
-      className="column-wrapper"
-      onDragOver={() => {
-        columnTarget === "column" && onColumnMove(columnIndex);
-      }}
-      onDragEnd={e => onDragEnd(e)}
-    >
-      <div
-        style={{ opacity: columnTargetId === _id && "0.3" }}
+class Column extends Component {
+  state = { draggableColumn: false };
+  render() {
+    const {
+      children,
+      title,
+      _id,
+      onSetColumnTargetOption,
+      columnIndex,
+      columnTarget,
+      onColumnMove,
+      onDragEnd,
+      columnTargetId
+    } = this.props;
+    const { draggableColumn } = this.state;
+    return (
+      <span
         className="column-body"
-        draggable={draggable}
+        onDragEnterCapture={() => {
+          columnTarget === "column" && onColumnMove(columnIndex);
+        }}
+        onMouseUp={e => onDragEnd(e)}
+        onDragEnd={e => onDragEnd(e)}
+        onDrop={e => onDragEnd(e)}
+        style={{ opacity: columnTargetId === _id && "0.3" }}
+        draggable={draggableColumn}
         id="column"
         onDragStart={e => onSetColumnTargetOption(e, _id)}
       >
-        <div className="column-title">{title}</div>
-        {children}
-      </div>
-    </div>
-  );
+        <div
+          className="column-title"
+          onMouseDown={() => this.setState({ draggableColumn: true })}
+          onMouseUp={() => {
+            this.setState({ draggableColumn: false });
+          }}
+        >
+          {title}
+        </div>
+        <div className="column-list">{children}</div>
+      </span>
+    );
+  }
 }
+
+export default Column;
